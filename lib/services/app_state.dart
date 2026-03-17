@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,7 +54,9 @@ class AppState extends ChangeNotifier {
 
     payments
       ..clear()
-      ..addAll(_decodeList(prefs.getString('payments')).map(InvoicePayment.fromJson));
+      ..addAll(
+        _decodeList(prefs.getString('payments')).map(InvoicePayment.fromJson),
+      );
 
     final settingsRaw = prefs.getString('repSettings');
     if (settingsRaw != null && settingsRaw.isNotEmpty) {
@@ -137,8 +138,9 @@ class AppState extends ChangeNotifier {
     payments
       ..clear()
       ..addAll(
-        ((data['payments'] as List?) ?? [])
-            .map((e) => InvoicePayment.fromJson(Map<String, dynamic>.from(e as Map))),
+        ((data['payments'] as List?) ?? []).map(
+          (e) => InvoicePayment.fromJson(Map<String, dynamic>.from(e as Map)),
+        ),
       );
 
     repSettings = RepSettings.fromJson(
@@ -269,13 +271,15 @@ class AppState extends ChangeNotifier {
 
     final safeDiscount = discountValue.clamp(0.0, subtotal).toDouble();
     final safeTaxValue = taxValue < 0 ? 0.0 : taxValue;
-    final total =
-        (subtotal - safeDiscount + safeTaxValue).clamp(0.0, double.infinity).toDouble();
+    final total = (subtotal - safeDiscount + safeTaxValue)
+        .clamp(0.0, double.infinity)
+        .toDouble();
     final safePaid = paidAmount.clamp(0.0, total).toDouble();
 
     final requested = <String, int>{};
     for (final item in normalizedItems) {
-      requested[item.productId] = (requested[item.productId] ?? 0) + item.quantity;
+      requested[item.productId] =
+          (requested[item.productId] ?? 0) + item.quantity;
     }
 
     final insufficient = <String>[];
@@ -287,7 +291,7 @@ class AppState extends ChangeNotifier {
         product = null;
       }
 
-      if (product == null || product!.stock < qty) {
+      if (product == null || product.stock < qty) {
         insufficient.add(product?.name ?? 'منتج غير معروف');
       }
     });
@@ -497,8 +501,9 @@ class AppState extends ChangeNotifier {
     if (invoiceIndex == -1) return;
 
     final invoice = invoices[invoiceIndex];
-    final newPaid =
-        (invoice.paidAmount + payment.amount).clamp(0.0, invoice.total).toDouble();
+    final newPaid = (invoice.paidAmount + payment.amount)
+        .clamp(0.0, invoice.total)
+        .toDouble();
 
     invoices[invoiceIndex] = invoice.copyWith(
       paidAmount: newPaid,
@@ -567,20 +572,20 @@ class AppState extends ChangeNotifier {
   int invoiceCountForCustomer(String customerId) =>
       invoices.where((e) => e.customerId == customerId).length;
 
-  double outstandingForCustomer(String customerId) =>
-      invoices
-          .where((e) => e.customerId == customerId)
-          .fold<double>(0.0, (sum, inv) => sum + max<double>(0.0, inv.remaining));
+  double outstandingForCustomer(String customerId) => invoices
+      .where((e) => e.customerId == customerId)
+      .fold<double>(
+        0.0,
+        (sum, inv) => sum + max<double>(0.0, inv.remaining),
+      );
 
-  double totalSalesForCustomer(String customerId) =>
-      invoices
-          .where((e) => e.customerId == customerId)
-          .fold<double>(0.0, (sum, inv) => sum + inv.total);
+  double totalSalesForCustomer(String customerId) => invoices
+      .where((e) => e.customerId == customerId)
+      .fold<double>(0.0, (sum, inv) => sum + inv.total);
 
-  double totalPaidForCustomer(String customerId) =>
-      invoices
-          .where((e) => e.customerId == customerId)
-          .fold<double>(0.0, (sum, inv) => sum + inv.paidAmount);
+  double totalPaidForCustomer(String customerId) => invoices
+      .where((e) => e.customerId == customerId)
+      .fold<double>(0.0, (sum, inv) => sum + inv.paidAmount);
 
   List<Invoice> invoicesForCustomer(String customerId) {
     final list = invoices.where((e) => e.customerId == customerId).toList();
@@ -617,7 +622,9 @@ class AppState extends ChangeNotifier {
 
   Future<File> createBackup() async {
     final dir = await _backupDir();
-    final file = File('${dir.path}/backup_${DateTime.now().millisecondsSinceEpoch}.json');
+    final file = File(
+      '${dir.path}/backup_${DateTime.now().millisecondsSinceEpoch}.json',
+    );
     await file.writeAsString(
       const JsonEncoder.withIndent('  ').convert(exportData()),
     );
