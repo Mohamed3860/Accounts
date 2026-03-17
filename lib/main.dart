@@ -7,7 +7,6 @@ import 'screens/dashboard_screen.dart';
 import 'screens/invoices_screen.dart';
 import 'screens/products_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/suppliers_screen.dart';
 import 'services/app_state.dart';
 
 Future<void> main() async {
@@ -19,11 +18,12 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   final AppState appState;
+
   const MyApp({super.key, required this.appState});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
+    return ChangeNotifierProvider<AppState>.value(
       value: appState,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -86,7 +86,7 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int index = 0;
 
-  final pages = const [
+  static const List<Widget> pages = [
     DashboardScreen(),
     CustomersScreen(),
     ProductsScreen(),
@@ -117,9 +117,12 @@ class _BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onChanged;
 
-  const _BottomNavBar({required this.currentIndex, required this.onChanged});
+  const _BottomNavBar({
+    required this.currentIndex,
+    required this.onChanged,
+  });
 
-  static const items = [
+  static const List<({String label, IconData icon})> items = [
     (label: 'الرئيسية', icon: Icons.grid_view_rounded),
     (label: 'العملاء', icon: Icons.groups_2_rounded),
     (label: 'المنتجات', icon: Icons.shopping_bag_outlined),
@@ -145,15 +148,20 @@ class _BottomNavBar extends StatelessWidget {
         children: List.generate(items.length, (i) {
           final item = items[i];
           final selected = i == currentIndex;
+
           return Expanded(
             child: InkWell(
               borderRadius: BorderRadius.circular(24),
               onTap: () => onChanged(i),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 220),
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 8,
+                ),
                 decoration: BoxDecoration(
-                  color: selected ? const Color(0xFFEAF0FF) : Colors.transparent,
+                  color:
+                      selected ? const Color(0xFFEAF0FF) : Colors.transparent,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Column(
@@ -162,7 +170,9 @@ class _BottomNavBar extends StatelessWidget {
                     Icon(
                       item.icon,
                       size: 31,
-                      color: selected ? const Color(0xFF2F5ED7) : const Color(0xFF111827),
+                      color: selected
+                          ? const Color(0xFF2F5ED7)
+                          : const Color(0xFF111827),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -171,7 +181,8 @@ class _BottomNavBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 13,
-                        fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                        fontWeight:
+                            selected ? FontWeight.w700 : FontWeight.w600,
                         color: const Color(0xFF111827),
                       ),
                     ),
