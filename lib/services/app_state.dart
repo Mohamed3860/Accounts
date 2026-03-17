@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,9 +44,8 @@ class AppState extends ChangeNotifier {
     categories
       ..clear()
       ..addAll(
-        (prefs.getStringList('categories') ?? []).where(
-          (e) => e.trim().isNotEmpty,
-        ),
+        (prefs.getStringList('categories') ?? [])
+            .where((e) => e.trim().isNotEmpty),
       );
 
     invoices
@@ -125,7 +125,7 @@ class AppState extends ChangeNotifier {
     categories
       ..clear()
       ..addAll(
-        (((data['categories'] as List?) ?? [])).map((e) => e.toString()),
+        ((data['categories'] as List?) ?? []).map((e) => e.toString()),
       );
 
     invoices
@@ -414,8 +414,9 @@ class AppState extends ChangeNotifier {
       throw StateError('المبلغ المدخل غير صالح');
     }
 
-    final newPaid =
-        (invoice.paidAmount + safeAmount).clamp(0.0, invoice.total).toDouble();
+    final newPaid = (invoice.paidAmount + safeAmount)
+        .clamp(0.0, invoice.total)
+        .toDouble();
 
     invoices[invoiceIndex] = invoice.copyWith(
       paidAmount: newPaid,
