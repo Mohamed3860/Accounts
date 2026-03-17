@@ -11,9 +11,13 @@ class SuppliersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+
     return Scaffold(
       body: state.suppliers.isEmpty
-          ? const EmptyState(title: 'لا يوجد موردون', subtitle: 'أضف موردًا لإدارة المشتريات')
+          ? const EmptyState(
+              title: 'لا يوجد موردون',
+              subtitle: 'أضف موردًا لإدارة المشتريات',
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: state.suppliers.length,
@@ -22,12 +26,12 @@ class SuppliersScreen extends StatelessWidget {
                 return Card(
                   child: ListTile(
                     title: Text(item.name),
-                    subtitle: Text('${item.phone}
-${item.address}'),
+                    subtitle: Text('${item.phone}\n${item.address}'),
                     isThreeLine: true,
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline_rounded),
-                      onPressed: () => context.read<AppState>().deleteSupplier(item.id),
+                      onPressed: () =>
+                          context.read<AppState>().deleteSupplier(item.id),
                     ),
                   ),
                 );
@@ -45,25 +49,39 @@ ${item.address}'),
     final name = TextEditingController();
     final phone = TextEditingController();
     final address = TextEditingController();
+
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('إضافة مورد'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(controller: name, decoration: const InputDecoration(labelText: 'الاسم')),
-              TextField(controller: phone, decoration: const InputDecoration(labelText: 'الهاتف')),
-              TextField(controller: address, decoration: const InputDecoration(labelText: 'العنوان')),
+              TextField(
+                controller: name,
+                decoration: const InputDecoration(labelText: 'الاسم'),
+              ),
+              TextField(
+                controller: phone,
+                decoration: const InputDecoration(labelText: 'الهاتف'),
+              ),
+              TextField(
+                controller: address,
+                decoration: const InputDecoration(labelText: 'العنوان'),
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('إلغاء'),
+          ),
           FilledButton(
             onPressed: () async {
               if (name.text.trim().isEmpty) return;
+
               final state = context.read<AppState>();
               await state.addSupplier(
                 Supplier(
@@ -73,7 +91,10 @@ ${item.address}'),
                   address: address.text.trim(),
                 ),
               );
-              if (context.mounted) Navigator.pop(context);
+
+              if (dialogContext.mounted) {
+                Navigator.pop(dialogContext);
+              }
             },
             child: const Text('حفظ'),
           ),
